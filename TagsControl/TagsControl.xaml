@@ -1,0 +1,82 @@
+﻿<UserControl x:Class="TagsControl.TagsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TagsControl"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <!-- Стиль для тегов (чипов) -->
+        <Style TargetType="Border" x:Key="TagChipStyle">
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="8,2"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+
+        <!-- Стиль для кнопки удаления -->
+        <Style TargetType="Button" x:Key="DeleteButtonStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="8" Background="Transparent" Padding="2">
+                            <TextBlock Text="×" FontSize="12" Foreground="White" 
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Width" Value="16"/>
+            <Setter Property="Height" Value="16"/>
+            <Setter Property="Margin" Value="4,0,0,0"/>
+        </Style>
+
+        <!-- Стиль для предложения -->
+        <Style TargetType="Border" x:Key="SuggestionItemStyle">
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        
+    </UserControl.Resources>
+
+    <Grid>
+        <!-- Внешняя рамка, чтобы весь контрол выглядел как единое текстовое поле -->
+        <Border x:Name="ClickArea"
+                Margin="2"
+                Padding="3"
+                Background="White"
+                BorderBrush="#CCCCCC"
+                BorderThickness="1"
+                CornerRadius="4"
+                Cursor="IBeam"
+                MouseDown="ClickArea_MouseDown"
+                MouseEnter="ClickArea_MouseEnter"
+                MouseLeave="ClickArea_MouseLeave">
+            <!-- ScrollViewer для поддержки скроллбара при переполнении -->
+            <ScrollViewer x:Name="TagsScrollViewer"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled"
+                          CanContentScroll="False"
+                          PreviewMouseDown="TagsScrollViewer_PreviewMouseDown">
+                <!-- Контейнер для выбранных тегов и поля ввода -->
+                <WrapPanel x:Name="TagsContainer" Margin="2" />
+            </ScrollViewer>
+        </Border>
+
+        <!-- Панель с предложениями -->
+        <Popup x:Name="SuggestionsPopup" 
+               Placement="Bottom" 
+               StaysOpen="False"
+               AllowsTransparency="True">
+            <Border Background="White" BorderBrush="#DDD" BorderThickness="1" 
+                    CornerRadius="4" Padding="2" MaxHeight="200">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel x:Name="SuggestionsPanel"/>
+                </ScrollViewer>
+            </Border>
+        </Popup>
+    </Grid>
+</UserControl>
