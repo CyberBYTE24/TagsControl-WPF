@@ -38,7 +38,7 @@ namespace TagsControl
         // DependencyProperty для CornerRadius внешнего Border
         public static readonly DependencyProperty BorderCornerRadiusProperty =
             DependencyProperty.Register("BorderCornerRadius", typeof(CornerRadius), typeof(TagsControl),
-                new PropertyMetadata(new CornerRadius(4)));
+                new PropertyMetadata(new CornerRadius(0)));
 
         public CornerRadius BorderCornerRadius
         {
@@ -49,7 +49,7 @@ namespace TagsControl
         // DependencyProperty для BorderBrush внутреннего Border
         public static readonly DependencyProperty InnerBorderBrushProperty =
             DependencyProperty.Register("InnerBorderBrush", typeof(Brush), typeof(TagsControl),
-                new PropertyMetadata(null));
+                new PropertyMetadata(new SolidColorBrush(Color.FromRgb(0, 150,200))));
 
         public Brush InnerBorderBrush
         {
@@ -60,7 +60,7 @@ namespace TagsControl
         // DependencyProperty для BorderThickness внутреннего Border
         public static readonly DependencyProperty InnerBorderThicknessProperty =
             DependencyProperty.Register("InnerBorderThickness", typeof(Thickness), typeof(TagsControl),
-                new PropertyMetadata(new Thickness(0)));
+                new PropertyMetadata(new Thickness(0.5)));
 
         public Thickness InnerBorderThickness
         {
