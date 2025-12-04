@@ -13,9 +13,54 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Вводите теги:" Margin="0,0,0,10"/>
-        <tagscontrol:TagsControl x:Name="TagSelector" Grid.Row="1"
-                                 ItemsSource="{Binding AvailableTags}"
-                                 SelectedTags="{Binding SelectedTags}"/>
+        <TextBlock
+            Grid.Row="0"
+            Text="Tags Control Sample"
+            FontWeight="Bold"
+            FontSize="16pt"
+            Margin="10"/>
+
+        <Grid Grid.Row="1" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Light Theme (Default)"
+                    FontSize="14pt" Margin="5"/>
+                <tagscontrol:TagsControl
+                    Grid.Row="1"
+                    Margin="10pt"
+                    ItemsSource="{Binding AvailableTags}"
+                    SelectedTags="{Binding SelectedTags, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+
+            <Grid Grid.Column="1" Background="#222">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock 
+                    Text="Dark Theme"
+                    Foreground="#eee"
+                    Margin="5"
+                    FontSize="14pt" />
+                <tagscontrol:TagsControl
+                    Grid.Row="1"
+                    InnerBackground="#111"
+                    InnerBorderBrush="#444"
+                    Foreground="#eee"
+                    BorderCornerRadius="10"
+                    Margin="10pt"
+                    ItemsSource="{Binding AvailableTags}"
+                    SelectedTags="{Binding SelectedTags, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                </tagscontrol:TagsControl>
+            </Grid>
+        </Grid>
     </Grid>
 </Window>

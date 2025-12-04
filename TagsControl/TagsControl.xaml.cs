@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -34,10 +35,55 @@ namespace TagsControl
             DependencyProperty.Register("SelectedTags", typeof(IList), typeof(TagsControl),
                 new PropertyMetadata(null, OnSelectedTagsChanged));
 
+        // DependencyProperty для CornerRadius внешнего Border
+        public static readonly DependencyProperty BorderCornerRadiusProperty =
+            DependencyProperty.Register("BorderCornerRadius", typeof(CornerRadius), typeof(TagsControl),
+                new PropertyMetadata(new CornerRadius(4)));
+
+        public CornerRadius BorderCornerRadius
+        {
+            get => (CornerRadius)GetValue(BorderCornerRadiusProperty);
+            set => SetValue(BorderCornerRadiusProperty, value);
+        }
+
+        // DependencyProperty для BorderBrush внутреннего Border
+        public static readonly DependencyProperty InnerBorderBrushProperty =
+            DependencyProperty.Register("InnerBorderBrush", typeof(Brush), typeof(TagsControl),
+                new PropertyMetadata(null));
+
+        public Brush InnerBorderBrush
+        {
+            get => (Brush)GetValue(InnerBorderBrushProperty);
+            set => SetValue(InnerBorderBrushProperty, value);
+        }
+
+        // DependencyProperty для BorderThickness внутреннего Border
+        public static readonly DependencyProperty InnerBorderThicknessProperty =
+            DependencyProperty.Register("InnerBorderThickness", typeof(Thickness), typeof(TagsControl),
+                new PropertyMetadata(new Thickness(0)));
+
+        public Thickness InnerBorderThickness
+        {
+            get => (Thickness)GetValue(InnerBorderThicknessProperty);
+            set => SetValue(InnerBorderThicknessProperty, value);
+        }
+
+        // DependencyProperty для Background внутреннего Border
+        public static readonly DependencyProperty InnerBackgroundProperty =
+            DependencyProperty.Register("InnerBackground", typeof(Brush), typeof(TagsControl),
+                new PropertyMetadata(null));
+
+        public Brush InnerBackground
+        {
+            get => (Brush)GetValue(InnerBackgroundProperty);
+            set => SetValue(InnerBackgroundProperty, value);
+        }
+
         private int _selectedIndex = -1;
         private List<TagItem> _suggestions = new List<TagItem>();
         private TextBox InputTextBox;
         private int _selectedTagIndex = -1; // Индекс выделенного тега
+        private INotifyCollectionChanged _currentSelectedTagsCollection; // Для отслеживания изменений коллекции
 
         // Фиксированная палитра цветов для детерминированных цветов
         private static readonly Color[] _colorPalette = new[]
@@ -77,13 +123,15 @@ namespace TagsControl
                 BorderThickness = new Thickness(0),
                 Background = Brushes.Transparent
             };
+            InputTextBox.SetBinding(Control.ForegroundProperty, new Binding("Foreground") { Source = this });
+            InputTextBox.SetBinding(TextBox.CaretBrushProperty, new Binding("Foreground") { Source = this });
             InputTextBox.KeyDown += InputTextBox_KeyDown;
             InputTextBox.PreviewKeyDown += InputTextBox_PreviewKeyDown;
             InputTextBox.TextChanged += InputTextBox_TextChanged;
             
             // Настраиваем PlacementTarget для Popup
             SuggestionsPopup.PlacementTarget = InputTextBox;
-            
+            SuggestionsPopupBorder.SetBinding(Control.BackgroundProperty, new Binding("Background") { Source = this}); 
             // Предотвращаем переход фокуса по Tab из контрола
             this.PreviewKeyDown += TagsControl_PreviewKeyDown;
             
@@ -199,7 +247,29 @@ namespace TagsControl
         private static void OnSelectedTagsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = d as TagsControl;
-            control?.UpdateTagsUI();
+            if (control != null)
+            {
+                // Отписываемся от старой коллекции
+                if (control._currentSelectedTagsCollection != null)
+                {
+                    control._currentSelectedTagsCollection.CollectionChanged -= control.SelectedTags_CollectionChanged;
+                }
+
+                // Подписываемся на новую коллекцию, если она поддерживает уведомления
+                control._currentSelectedTagsCollection = e.NewValue as INotifyCollectionChanged;
+                if (control._currentSelectedTagsCollection != null)
+                {
+                    control._currentSelectedTagsCollection.CollectionChanged += control.SelectedTags_CollectionChanged;
+                }
+
+                control.UpdateTagsUI();
+            }
+        }
+
+        private void SelectedTags_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            // Обновляем UI при любых изменениях в коллекции (добавление, удаление, перемещение)
+            UpdateTagsUI();
         }
 
         private void UpdateTagsUI()

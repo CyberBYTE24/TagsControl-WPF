@@ -12,14 +12,39 @@ namespace TagsControlDemo.ViewModel
     public class MainViewModel : INotifyPropertyChanged
     {
         public ObservableCollection<TagItem> AvailableTags { get; set; }
-        public ObservableCollection<TagItem> SelectedTags { get; set; }
+        
+        private ObservableCollection<TagItem> _selectedTags;
+        public ObservableCollection<TagItem> SelectedTags
+        {
+            get => _selectedTags;
+            set
+            {
+                if (_selectedTags != value)
+                {
+                    // Отписываемся от старой коллекции
+                    if (_selectedTags != null)
+                    {
+                        _selectedTags.CollectionChanged -= SelectedTagsCollectionChanged;
+                    }
+                    
+                    _selectedTags = value;
+                    
+                    // Подписываемся на новую коллекцию
+                    if (_selectedTags != null)
+                    {
+                        _selectedTags.CollectionChanged += SelectedTagsCollectionChanged;
+                    }
+                    
+                    OnPropertyChanged(nameof(SelectedTags));
+                }
+            }
+        }
 
         public MainViewModel()
         {
             // Инициализация доступных тегов
             AvailableTags = new ObservableCollection<TagItem>
         {
-            new TagItem { DisplayName = "C#", Value = "csharp" },
             new TagItem { DisplayName = "WPF", Value = "wpf" },
             new TagItem { DisplayName = "MVVM", Value = "mvvm" },
             new TagItem { DisplayName = "XAML", Value = "xaml" },
@@ -27,8 +52,6 @@ namespace TagsControlDemo.ViewModel
         };
 
             SelectedTags = new ObservableCollection<TagItem>();
-
-            SelectedTags.CollectionChanged += SelectedTagsCollectionChanged;
         }
 
         private void SelectedTagsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -54,5 +77,10 @@ namespace TagsControlDemo.ViewModel
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }
