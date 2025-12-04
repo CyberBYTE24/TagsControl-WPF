@@ -10,7 +10,6 @@
              Foreground="Black"
              BorderThickness="0" Cursor="">
     <UserControl.Resources>
-        <!-- Стиль для тегов (чипов) -->
         <Style TargetType="Border" x:Key="TagChipStyle">
             <Setter Property="CornerRadius" Value="12"/>
             <Setter Property="Padding" Value="8,2"/>
@@ -18,8 +17,6 @@
             <Setter Property="Background" Value="#4CAF50"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
         </Style>
-
-        <!-- Стиль для кнопки удаления -->
         <Style TargetType="Button" x:Key="DeleteButtonStyle">
             <Setter Property="Template">
                 <Setter.Value>
@@ -35,8 +32,6 @@
             <Setter Property="Height" Value="16"/>
             <Setter Property="Margin" Value="4,0,0,0"/>
         </Style>
-
-        <!-- Стиль для предложения -->
         <Style TargetType="Border" x:Key="SuggestionItemStyle">
             <Setter Property="Padding" Value="8,4"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -46,7 +41,6 @@
     </UserControl.Resources>
 
     <Grid Background="Transparent">
-        <!-- Внешняя рамка, чтобы весь контрол выглядел как единое текстовое поле -->
         <Border x:Name="ClickArea"
                 Margin="0"
                 Padding="3"
@@ -58,18 +52,14 @@
                 MouseDown="ClickArea_MouseDown"
                 MouseEnter="ClickArea_MouseEnter"
                 MouseLeave="ClickArea_MouseLeave">
-            <!-- ScrollViewer для поддержки скроллбара при переполнении -->
             <ScrollViewer x:Name="TagsScrollViewer"
                           VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled"
                           CanContentScroll="False"
                           PreviewMouseDown="TagsScrollViewer_PreviewMouseDown">
-                <!-- Контейнер для выбранных тегов и поля ввода -->
                 <WrapPanel x:Name="TagsContainer" Margin="2" />
             </ScrollViewer>
         </Border>
-
-        <!-- Панель с предложениями -->
         <Popup x:Name="SuggestionsPopup" 
                Placement="Bottom" 
                StaysOpen="False"

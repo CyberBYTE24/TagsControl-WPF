@@ -1,21 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using TagsControl.Models;
 
 namespace TagsControl
@@ -25,20 +18,47 @@ namespace TagsControl
     /// </summary>
     public partial class TagsControl : UserControl
     {
-        // DependencyProperty для источника данных
+        /// <summary>
+        /// DependencyProperty for Source of Tags to selection
+        /// </summary>
         public static readonly DependencyProperty ItemsSourceProperty =
             DependencyProperty.Register("ItemsSource", typeof(IEnumerable), typeof(TagsControl),
                 new PropertyMetadata(null, OnItemsSourceChanged));
 
-        // DependencyProperty для выбранных тегов
+        /// <summary>
+        /// DependencyProperty of Source of selected Tags
+        /// </summary>
         public static readonly DependencyProperty SelectedTagsProperty =
             DependencyProperty.Register("SelectedTags", typeof(IList), typeof(TagsControl),
                 new PropertyMetadata(null, OnSelectedTagsChanged));
 
-        // DependencyProperty для CornerRadius внешнего Border
+        /// <summary>
+        /// DependencyProperty for CornerRadius of outer Border
+        /// </summary>
         public static readonly DependencyProperty BorderCornerRadiusProperty =
             DependencyProperty.Register("BorderCornerRadius", typeof(CornerRadius), typeof(TagsControl),
                 new PropertyMetadata(new CornerRadius(0)));
+
+        /// <summary>
+        /// DependencyProperty for BorderBrush inner Border
+        /// </summary>
+        public static readonly DependencyProperty InnerBorderBrushProperty =
+            DependencyProperty.Register("InnerBorderBrush", typeof(Brush), typeof(TagsControl),
+                new PropertyMetadata(new SolidColorBrush(Color.FromRgb(0, 150, 200))));
+
+        /// <summary>
+        /// DependencyProperty for BorderThickness of inner Border
+        /// </summary>
+        public static readonly DependencyProperty InnerBorderThicknessProperty =
+            DependencyProperty.Register("InnerBorderThickness", typeof(Thickness), typeof(TagsControl),
+                new PropertyMetadata(new Thickness(0.5)));
+
+        /// <summary>
+        /// DependencyProperty for Background of inner Border
+        /// </summary>
+        public static readonly DependencyProperty InnerBackgroundProperty =
+            DependencyProperty.Register("InnerBackground", typeof(Brush), typeof(TagsControl),
+                new PropertyMetadata(null));
 
         public CornerRadius BorderCornerRadius
         {
@@ -46,32 +66,17 @@ namespace TagsControl
             set => SetValue(BorderCornerRadiusProperty, value);
         }
 
-        // DependencyProperty для BorderBrush внутреннего Border
-        public static readonly DependencyProperty InnerBorderBrushProperty =
-            DependencyProperty.Register("InnerBorderBrush", typeof(Brush), typeof(TagsControl),
-                new PropertyMetadata(new SolidColorBrush(Color.FromRgb(0, 150,200))));
-
         public Brush InnerBorderBrush
         {
             get => (Brush)GetValue(InnerBorderBrushProperty);
             set => SetValue(InnerBorderBrushProperty, value);
         }
 
-        // DependencyProperty для BorderThickness внутреннего Border
-        public static readonly DependencyProperty InnerBorderThicknessProperty =
-            DependencyProperty.Register("InnerBorderThickness", typeof(Thickness), typeof(TagsControl),
-                new PropertyMetadata(new Thickness(0.5)));
-
         public Thickness InnerBorderThickness
         {
             get => (Thickness)GetValue(InnerBorderThicknessProperty);
             set => SetValue(InnerBorderThicknessProperty, value);
         }
-
-        // DependencyProperty для Background внутреннего Border
-        public static readonly DependencyProperty InnerBackgroundProperty =
-            DependencyProperty.Register("InnerBackground", typeof(Brush), typeof(TagsControl),
-                new PropertyMetadata(null));
 
         public Brush InnerBackground
         {
@@ -86,28 +91,28 @@ namespace TagsControl
         private INotifyCollectionChanged _currentSelectedTagsCollection; // Для отслеживания изменений коллекции
 
         // Фиксированная палитра цветов для детерминированных цветов
-        private static readonly Color[] _colorPalette = new[]
+        private static readonly Brush[] _brushes = new Brush[]
         {
-            Color.FromRgb(255, 87, 34),    // Red
-            Color.FromRgb(156, 39, 176),   // Purple
-            Color.FromRgb(63, 81, 181),    // Indigo
-            Color.FromRgb(33, 150, 243),   // Blue
-            Color.FromRgb(0, 188, 212),    // Cyan
-            Color.FromRgb(0, 150, 136),    // Teal
-            Color.FromRgb(76, 175, 80),    // Green
-            Color.FromRgb(139, 195, 74),   // Light Green
-            Color.FromRgb(205, 220, 57),   // Lime
-            Color.FromRgb(255, 193, 7),    // Amber
-            Color.FromRgb(255, 152, 0),    // Orange
-            Color.FromRgb(96, 125, 139),   // Blue Grey
-            Color.FromRgb(121, 85, 72),    // Brown
-            Color.FromRgb(158, 158, 158),  // Grey
-            Color.FromRgb(96, 125, 139),   // Blue Grey
-            Color.FromRgb(103, 58, 183)    // Deep Purple
+            new SolidColorBrush(Color.FromRgb(255, 87, 34)),    // Red
+            new SolidColorBrush(Color.FromRgb(156, 39, 176)),   // Purple
+            new SolidColorBrush(Color.FromRgb(63, 81, 181)),    // Indigo
+            new SolidColorBrush(Color.FromRgb(33, 150, 243)),   // Blue
+            new SolidColorBrush(Color.FromRgb(0, 188, 212)),    // Cyan
+            new SolidColorBrush(Color.FromRgb(0, 150, 136)),    // Teal
+            new SolidColorBrush(Color.FromRgb(76, 175, 80)),    // Green
+            new SolidColorBrush(Color.FromRgb(139, 195, 74)),   // Light Green
+            new SolidColorBrush(Color.FromRgb(205, 220, 57)),   // Lime
+            new SolidColorBrush(Color.FromRgb(255, 193, 7)),    // Amber
+            new SolidColorBrush(Color.FromRgb(255, 152, 0)),    // Orange
+            new SolidColorBrush(Color.FromRgb(96, 125, 139)),   // Blue Grey
+            new SolidColorBrush(Color.FromRgb(121, 85, 72)),    // Brown
+            new SolidColorBrush(Color.FromRgb(158, 158, 158)),  // Grey
+            new SolidColorBrush(Color.FromRgb(96, 125, 139)),   // Blue Grey
+            new SolidColorBrush(Color.FromRgb(103, 58, 183))    // Deep Purple
         };
 
         // Кэш для цветов по DisplayName для производительности
-        private static readonly Dictionary<string, SolidColorBrush> _colorCache = new Dictionary<string, SolidColorBrush>();
+        private static readonly Dictionary<string, int> _colorIndexCache = new Dictionary<string, int>();
 
         public TagsControl()
         {
@@ -311,13 +316,13 @@ namespace TagsControl
         {
 
             // Получаем детерминированный цвет для этого displayName
-            var backgroundColor = GetDeterministicColorBrush(tag.DisplayName);
-            var foregroundColor = GetContrastColor(backgroundColor.Color);
+            var backgroundBrushIndex = GetDeterministicBrushIndex(tag.DisplayName);
+            var foregroundColor = GetContrastColor(backgroundBrushIndex);
 
             var border = new Border
             {
                 Style = (Style)FindResource("TagChipStyle"),
-                Background = backgroundColor,
+                Background = _brushes[backgroundBrushIndex],
                 Cursor = Cursors.Arrow // Обычный курсор для тегов
             };
 
@@ -364,35 +369,40 @@ namespace TagsControl
             return border;
         }
 
-        private SolidColorBrush GetDeterministicColorBrush(string displayName)
+        private int GetDeterministicBrushIndex(string displayName)
         {
             if (string.IsNullOrEmpty(displayName))
-                return new SolidColorBrush(_colorPalette[0]);
+                return 0;
 
-            // Проверяем кэш сначала
-            if (_colorCache.TryGetValue(displayName, out var cachedBrush))
+            // Check value in cache
+            if (_colorIndexCache.TryGetValue(displayName, out var cachedBrush))
                 return cachedBrush;
 
-            // Генерируем хеш от строки
-            int hash = GetStableHash(displayName);
+            // Generate and limit index
+            int index = Math.Abs(GetStableHash(displayName)) % _brushes.Length;
 
-            // Выбираем цвет из палитры на основе хеша
-            int colorIndex = Math.Abs(hash) % _colorPalette.Length;
-            var color = _colorPalette[colorIndex];
+            // Save Color index in cache
+            _colorIndexCache[displayName] = index;
 
-            // Создаем кисть и кэшируем ее
-            var brush = new SolidColorBrush(color);
-            _colorCache[displayName] = brush;
-
-            return brush;
+            return index;
         }
 
-        private Color GetContrastColor(Color backgroundColor)
+        private Color GetContrastColor(int backgroundBrushIndex)
         {
-            // Рассчитываем яркость фона
-            double brightness = (0.299 * backgroundColor.R + 0.587 * backgroundColor.G + 0.114 * backgroundColor.B) / 255;
+            Color color;
+            switch(_brushes[backgroundBrushIndex])
+            {
+                case SolidColorBrush solidColorBrush:
+                    color = solidColorBrush.Color;
+                    break;
+                case LinearGradientBrush linearGradientBrush:
+                    color = linearGradientBrush.GradientStops[0].Color;
+                    break;
+                default:
+                    return Colors.White;
+            }
+            double brightness = (0.299 * color.R + 0.587 * color.G + 0.114 * color.B) / 255;
 
-            // Если фон темный - используем белый текст, если светлый - темный
             return brightness < 0.7 ? Colors.White : Colors.Black;
         }
 
@@ -470,8 +480,8 @@ namespace TagsControl
             };
 
             // Получаем детерминированный цвет для предложения
-            var backgroundColor = GetDeterministicColorBrush(item.DisplayName);
-            var foregroundColor = GetContrastColor(backgroundColor.Color);
+            var backgroundBrushIndex = GetDeterministicBrushIndex(item.DisplayName);
+            var foregroundColor = GetContrastColor(backgroundBrushIndex);
 
             // Создаем визуальное представление предложения
             var grid = new Grid();
@@ -480,7 +490,7 @@ namespace TagsControl
             var colorBar = new Border
             {
                 Width = 4,
-                Background = backgroundColor,
+                Background = _brushes[backgroundBrushIndex],
                 CornerRadius = new CornerRadius(2, 0, 0, 2),
                 VerticalAlignment = VerticalAlignment.Stretch,
                 Margin = new Thickness(0, 2, 4, 2)
