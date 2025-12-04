@@ -59,6 +59,11 @@
                     Margin="10pt"
                     ItemsSource="{Binding AvailableTags}"
                     SelectedTags="{Binding SelectedTags, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <tagscontrol:TagsControl.TagsBackgroundBrushes>
+                        <SolidColorBrush Color="#FFAC59"/>
+                        <SolidColorBrush Color="#00D6FF"/>
+                        <SolidColorBrush Color="#B200D0"/>
+                    </tagscontrol:TagsControl.TagsBackgroundBrushes>
                 </tagscontrol:TagsControl>
             </Grid>
         </Grid>

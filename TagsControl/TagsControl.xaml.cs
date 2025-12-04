@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Security.Cryptography;
 using System.Text;
@@ -60,22 +61,34 @@ namespace TagsControl
             DependencyProperty.Register("InnerBackground", typeof(Brush), typeof(TagsControl),
                 new PropertyMetadata(null));
 
+        /// <summary>
+        /// DependencyProperty for Background of inner Border
+        /// </summary>
+        public static readonly DependencyProperty TagsBackgroundBrushesProperty =
+            DependencyProperty.Register("TagsBackgroundBrushes", typeof(ObservableCollection<Brush>), typeof(TagsControl),
+                new PropertyMetadata(null));
+
+        public ObservableCollection<Brush> TagsBackgroundBrushes
+        {
+            get => (ObservableCollection<Brush>)GetValue(TagsBackgroundBrushesProperty);
+            set => SetValue(TagsBackgroundBrushesProperty, value);
+        }
+
         public CornerRadius BorderCornerRadius
         {
             get => (CornerRadius)GetValue(BorderCornerRadiusProperty);
             set => SetValue(BorderCornerRadiusProperty, value);
+        }
+        public Thickness InnerBorderThickness
+        {
+            get => (Thickness)GetValue(InnerBorderThicknessProperty);
+            set => SetValue(InnerBorderThicknessProperty, value);
         }
 
         public Brush InnerBorderBrush
         {
             get => (Brush)GetValue(InnerBorderBrushProperty);
             set => SetValue(InnerBorderBrushProperty, value);
-        }
-
-        public Thickness InnerBorderThickness
-        {
-            get => (Thickness)GetValue(InnerBorderThicknessProperty);
-            set => SetValue(InnerBorderThicknessProperty, value);
         }
 
         public Brush InnerBackground
@@ -112,7 +125,16 @@ namespace TagsControl
         };
 
         // Кэш для цветов по DisplayName для производительности
-        private static readonly Dictionary<string, int> _colorIndexCache = new Dictionary<string, int>();
+        private Dictionary<string, int> _colorIndexCache = new Dictionary<string, int>();
+
+        static TagsControl()
+        {
+            //FrameworkPropertyMetadata metadata = new FrameworkPropertyMetadata(
+            //    new ObservableCollection<Brush>(),
+            //    FrameworkPropertyMetadataOptions.AffectsMeasure);
+            //
+            //TagsBackgroundBrushesProperty.OverrideMetadata(typeof(TagsControl), metadata);
+        }
 
         public TagsControl()
         {
@@ -142,9 +164,11 @@ namespace TagsControl
             
             // Устанавливаем SelectedTags после создания TextBox
             SelectedTags = new List<TagItem>();
-            
-            // Добавляем TextBox в WrapPanel, чтобы он был inline с тегами
-            //TagsContainer.Children.Add(InputTextBox);
+
+            if(TagsBackgroundBrushes == null)
+            {
+                TagsBackgroundBrushes = new ObservableCollection<Brush>();
+            }
         }
 
         /// <summary>
@@ -316,13 +340,13 @@ namespace TagsControl
         {
 
             // Получаем детерминированный цвет для этого displayName
-            var backgroundBrushIndex = GetDeterministicBrushIndex(tag.DisplayName);
-            var foregroundColor = GetContrastColor(backgroundBrushIndex);
+            Brush backgroundBrush = GetDeterministicBrush(tag.DisplayName);
+            Color foregroundColor = GetContrastColor(backgroundBrush);
 
             var border = new Border
             {
                 Style = (Style)FindResource("TagChipStyle"),
-                Background = _brushes[backgroundBrushIndex],
+                Background = backgroundBrush,
                 Cursor = Cursors.Arrow // Обычный курсор для тегов
             };
 
@@ -342,7 +366,7 @@ namespace TagsControl
             {
                 Style = (Style)FindResource("DeleteButtonStyle"),
                 Tag = tag,
-                Cursor = Cursors.Hand // Курсор "рука" для кнопки удаления
+                Cursor = Cursors.Hand
             };
             deleteButton.Click += DeleteButton_Click;
             deleteButton.MouseEnter += (s, e) => { deleteButton.Cursor = Cursors.Hand; };
@@ -369,28 +393,31 @@ namespace TagsControl
             return border;
         }
 
-        private int GetDeterministicBrushIndex(string displayName)
+        private Brush GetDeterministicBrush(string displayName)
         {
+            bool userTagsBackgroundInitialized = TagsBackgroundBrushes != null && TagsBackgroundBrushes.Count > 0;
+
+
             if (string.IsNullOrEmpty(displayName))
-                return 0;
+                return userTagsBackgroundInitialized ? TagsBackgroundBrushes[0] : _brushes[0];
 
             // Check value in cache
             if (_colorIndexCache.TryGetValue(displayName, out var cachedBrush))
-                return cachedBrush;
+                return userTagsBackgroundInitialized ? TagsBackgroundBrushes[cachedBrush] : _brushes[cachedBrush];
 
             // Generate and limit index
-            int index = Math.Abs(GetStableHash(displayName)) % _brushes.Length;
+            int index = Math.Abs(GetStableHash(displayName)) % (userTagsBackgroundInitialized ? TagsBackgroundBrushes.Count : _brushes.Length);
 
             // Save Color index in cache
             _colorIndexCache[displayName] = index;
 
-            return index;
+            return userTagsBackgroundInitialized ? TagsBackgroundBrushes[index] : _brushes[index];
         }
 
-        private Color GetContrastColor(int backgroundBrushIndex)
+        private Color GetContrastColor(Brush backgroundBrush)
         {
             Color color;
-            switch(_brushes[backgroundBrushIndex])
+            switch(backgroundBrush)
             {
                 case SolidColorBrush solidColorBrush:
                     color = solidColorBrush.Color;
@@ -480,8 +507,8 @@ namespace TagsControl
             };
 
             // Получаем детерминированный цвет для предложения
-            var backgroundBrushIndex = GetDeterministicBrushIndex(item.DisplayName);
-            var foregroundColor = GetContrastColor(backgroundBrushIndex);
+            Brush backgroundBrush = GetDeterministicBrush(item.DisplayName);
+            Color foregroundColor = GetContrastColor(backgroundBrush);
 
             // Создаем визуальное представление предложения
             var grid = new Grid();
@@ -490,7 +517,7 @@ namespace TagsControl
             var colorBar = new Border
             {
                 Width = 4,
-                Background = _brushes[backgroundBrushIndex],
+                Background = backgroundBrush,
                 CornerRadius = new CornerRadius(2, 0, 0, 2),
                 VerticalAlignment = VerticalAlignment.Stretch,
                 Margin = new Thickness(0, 2, 4, 2)
