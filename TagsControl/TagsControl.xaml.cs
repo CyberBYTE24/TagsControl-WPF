@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,13 +15,23 @@ using TagsControl.Models;
 namespace TagsControl
 {
     /// <summary>
-    /// Логика взаимодействия для UserControl1.xaml
+    /// A user control for managing tags in the application.
+    /// Provides functionality to add, remove, and edit tags with visual feedback.
     /// </summary>
+    /// <remarks>
+    /// This control allows users to manage collections of tags through a user-friendly interface.
+    /// It supports adding tags by typing and selecting from suggestions, removing individual tags,
+    /// and provides color-coded visualization for better organization.
+    /// </remarks>
     public partial class TagsControl : UserControl
     {
         /// <summary>
         /// DependencyProperty for Source of Tags to selection
         /// </summary>
+        /// <remarks>
+        /// This property represents the collection of available tags that can be selected.
+        /// It is used to populate the auto-complete suggestions as the user types.
+        /// </remarks>
         public static readonly DependencyProperty ItemsSourceProperty =
             DependencyProperty.Register("ItemsSource", typeof(IEnumerable), typeof(TagsControl),
                 new PropertyMetadata(null, OnItemsSourceChanged));
@@ -29,13 +39,32 @@ namespace TagsControl
         /// <summary>
         /// DependencyProperty of Source of selected Tags
         /// </summary>
+        /// <remarks>
+        /// This property represents the collection of currently selected tags.
+        /// It supports two-way data binding and updates the UI when changed.
+        /// </remarks>
         public static readonly DependencyProperty SelectedTagsProperty =
             DependencyProperty.Register("SelectedTags", typeof(IList), typeof(TagsControl),
                 new PropertyMetadata(null, OnSelectedTagsChanged));
 
         /// <summary>
+        /// DependencyProperty for Background of inner Border
+        /// </summary>
+        /// <remarks>
+        /// This property controls the background brushes used for tag visualization.
+        /// It allows customization of tag colors through a collection of Brush objects.
+        /// </remarks>
+        public static readonly DependencyProperty TagsBackgroundBrushesProperty =
+            DependencyProperty.Register("TagsBackgroundBrushes", typeof(ObservableCollection<Brush>), typeof(TagsControl),
+                new PropertyMetadata(null, OnTagsBackgroundBrushesChanged));
+
+        /// <summary>
         /// DependencyProperty for CornerRadius of outer Border
         /// </summary>
+        /// <remarks>
+        /// This property controls the corner radius of the outer border of the control.
+        /// It allows for rounded corners on the entire control container.
+        /// </remarks>
         public static readonly DependencyProperty BorderCornerRadiusProperty =
             DependencyProperty.Register("BorderCornerRadius", typeof(CornerRadius), typeof(TagsControl),
                 new PropertyMetadata(new CornerRadius(0)));
@@ -43,6 +72,10 @@ namespace TagsControl
         /// <summary>
         /// DependencyProperty for BorderBrush inner Border
         /// </summary>
+        /// <remarks>
+        /// This property controls the border brush of the inner elements in the control.
+        /// It defines the color of the border around the tag container and suggestions.
+        /// </remarks>
         public static readonly DependencyProperty InnerBorderBrushProperty =
             DependencyProperty.Register("InnerBorderBrush", typeof(Brush), typeof(TagsControl),
                 new PropertyMetadata(new SolidColorBrush(Color.FromRgb(0, 150, 200))));
@@ -50,6 +83,10 @@ namespace TagsControl
         /// <summary>
         /// DependencyProperty for BorderThickness of inner Border
         /// </summary>
+        /// <remarks>
+        /// This property controls the thickness of the border around inner elements.
+        /// It defines how thick the border appears around the tag container and suggestions.
+        /// </remarks>
         public static readonly DependencyProperty InnerBorderThicknessProperty =
             DependencyProperty.Register("InnerBorderThickness", typeof(Thickness), typeof(TagsControl),
                 new PropertyMetadata(new Thickness(0.5)));
@@ -57,40 +94,70 @@ namespace TagsControl
         /// <summary>
         /// DependencyProperty for Background of inner Border
         /// </summary>
+        /// <remarks>
+        /// This property controls the background color of the inner elements in the control.
+        /// It defines the background color of the tag container and suggestions panel.
+        /// </remarks>
         public static readonly DependencyProperty InnerBackgroundProperty =
             DependencyProperty.Register("InnerBackground", typeof(Brush), typeof(TagsControl),
                 new PropertyMetadata(null));
 
         /// <summary>
-        /// DependencyProperty for Background of inner Border
+        /// Gets or sets the collection of background brushes for tags
         /// </summary>
-        public static readonly DependencyProperty TagsBackgroundBrushesProperty =
-            DependencyProperty.Register("TagsBackgroundBrushes", typeof(ObservableCollection<Brush>), typeof(TagsControl),
-                new PropertyMetadata(null));
-
+        /// <remarks>
+        /// This property allows customization of tag colors. When set, it overrides the default color palette.
+        /// The control will cycle through these brushes when assigning colors to new tags.
+        /// </remarks>
         public ObservableCollection<Brush> TagsBackgroundBrushes
         {
             get => (ObservableCollection<Brush>)GetValue(TagsBackgroundBrushesProperty);
             set => SetValue(TagsBackgroundBrushesProperty, value);
         }
 
+        /// <summary>
+        /// Gets or sets the corner radius for the outer border
+        /// </summary>
+        /// <remarks>
+        /// This property controls the roundness of the control's outer border.
+        /// A value of 0 means sharp corners, while higher values create more rounded corners.
+        /// </remarks>
         public CornerRadius BorderCornerRadius
         {
             get => (CornerRadius)GetValue(BorderCornerRadiusProperty);
             set => SetValue(BorderCornerRadiusProperty, value);
         }
+
+        /// <summary>
+        /// Gets or sets the thickness of the inner border
+        /// </summary>
+        /// <remarks>
+        /// This property controls how thick the border appears around the tag container and suggestions.
+        /// </remarks>
         public Thickness InnerBorderThickness
         {
             get => (Thickness)GetValue(InnerBorderThicknessProperty);
             set => SetValue(InnerBorderThicknessProperty, value);
         }
 
+        /// <summary>
+        /// Gets or sets the brush for the inner border
+        /// </summary>
+        /// <remarks>
+        /// This property controls the color of the border around the tag container and suggestions.
+        /// </remarks>
         public Brush InnerBorderBrush
         {
             get => (Brush)GetValue(InnerBorderBrushProperty);
             set => SetValue(InnerBorderBrushProperty, value);
         }
 
+        /// <summary>
+        /// Gets or sets the background for inner elements
+        /// </summary>
+        /// <remarks>
+        /// This property controls the background color of the tag container and suggestions panel.
+        /// </remarks>
         public Brush InnerBackground
         {
             get => (Brush)GetValue(InnerBackgroundProperty);
@@ -100,10 +167,11 @@ namespace TagsControl
         private int _selectedIndex = -1;
         private List<TagItem> _suggestions = new List<TagItem>();
         private TextBox InputTextBox;
-        private int _selectedTagIndex = -1; // Индекс выделенного тега
-        private INotifyCollectionChanged _currentSelectedTagsCollection; // Для отслеживания изменений коллекции
+        private int _selectedTagIndex = -1; // index of selected tag
+        private INotifyCollectionChanged _currentSelectedTagsCollection; // for tracking changes to the selected tags collection
+        private INotifyCollectionChanged _currentBackgroundBrushesCollection; // for tracking changes to the color collection
 
-        // Фиксированная палитра цветов для детерминированных цветов
+        // Base color palette for deterministic colors
         private static readonly Brush[] _brushes = new Brush[]
         {
             new SolidColorBrush(Color.FromRgb(255, 87, 34)),    // Red
@@ -124,7 +192,7 @@ namespace TagsControl
             new SolidColorBrush(Color.FromRgb(103, 58, 183))    // Deep Purple
         };
 
-        // Кэш для цветов по DisplayName для производительности
+        // cache for colors by DisplayName for performance
         private Dictionary<string, int> _colorIndexCache = new Dictionary<string, int>();
 
         static TagsControl()
@@ -136,12 +204,19 @@ namespace TagsControl
             //TagsBackgroundBrushesProperty.OverrideMetadata(typeof(TagsControl), metadata);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the TagsControl class
+        /// </summary>
+        /// <remarks>
+        /// This constructor initializes the control's UI elements and sets up event handlers.
+        /// It creates the input TextBox programmatically and configures its properties.
+        /// </remarks>
         public TagsControl()
         {
             InitializeComponent();
-            
-            // Создаем TextBox программно ДО установки SelectedTags,
-            // чтобы избежать вызова UpdateTagsUI до инициализации TextBox
+
+            // Create TextBox programmatically BEFORE setting SelectedTags,
+            // to avoid calling UpdateTagsUI before TextBox initialization
             InputTextBox = new TextBox
             {
                 VerticalContentAlignment = VerticalAlignment.Center,
@@ -155,14 +230,14 @@ namespace TagsControl
             InputTextBox.KeyDown += InputTextBox_KeyDown;
             InputTextBox.PreviewKeyDown += InputTextBox_PreviewKeyDown;
             InputTextBox.TextChanged += InputTextBox_TextChanged;
-            
-            // Настраиваем PlacementTarget для Popup
+
+            // Configure PlacementTarget for Popup
             SuggestionsPopup.PlacementTarget = InputTextBox;
-            SuggestionsPopupBorder.SetBinding(Control.BackgroundProperty, new Binding("Background") { Source = this}); 
-            // Предотвращаем переход фокуса по Tab из контрола
+            SuggestionsPopupBorder.SetBinding(Control.BackgroundProperty, new Binding("Background") { Source = this});
+            // Configure PlacementTarget for Popup
             this.PreviewKeyDown += TagsControl_PreviewKeyDown;
-            
-            // Устанавливаем SelectedTags после создания TextBox
+
+            // Set SelectedTags after creating TextBox
             SelectedTags = new List<TagItem>();
 
             if(TagsBackgroundBrushes == null)
@@ -172,14 +247,20 @@ namespace TagsControl
         }
 
         /// <summary>
-        /// Клик по любой пустой области контрола переводит фокус на поле ввода.
+        /// Handles mouse down events on the click area to focus the input textbox
         /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">Mouse button event arguments</param>
+        /// <remarks>
+        /// This method ensures that clicking anywhere in the control focuses the input field,
+        /// except when clicking directly on a tag or delete button.
+        /// </remarks>
         private void ClickArea_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var source = e.OriginalSource as DependencyObject;
             if (IsInsideTagOrDeleteButton(source))
             {
-                // Даём событию пройти дальше, чтобы обработчик кнопки удаления выполнился
+                // Let the event propagate so that the delete button handler can execute
                 return;
             }
 
@@ -195,11 +276,16 @@ namespace TagsControl
                 return;
             }
 
-            // Если клик пришёлся по пустому месту, переносим фокус в поле ввода
+            // If the click was on an empty space, move focus to the input field
             FocusInputTextBox();
             e.Handled = true;
         }
 
+        /// <summary>
+        /// Determines if the mouse event occurred inside a tag or delete button
+        /// </summary>
+        /// <param name="source">The dependency object that triggered the event</param>
+        /// <returns>True if the event occurred inside a tag or delete button, false otherwise</returns>
         private bool IsInsideTagOrDeleteButton(DependencyObject source)
         {
             if (source == null) return false;
@@ -227,7 +313,7 @@ namespace TagsControl
 
         private void ClickArea_MouseEnter(object sender, MouseEventArgs e)
         {
-            // Устанавливаем курсор IBeam при наведении только если не на теге
+            // Set IBeam cursor on hover only if not over a tag
             var source = e.OriginalSource as DependencyObject;
             if (!IsInsideTagOrDeleteButton(source))
             {
@@ -237,17 +323,20 @@ namespace TagsControl
 
         private void ClickArea_MouseLeave(object sender, MouseEventArgs e)
         {
-            // Возвращаем стандартный курсор
+            // Return standard arrow cursor
             this.Cursor = Cursors.Arrow;
         }
 
+        /// <summary>
+        /// Sets focus to the input text box and positions the cursor at the end of the text
+        /// </summary>
         private void FocusInputTextBox()
         {
             if (InputTextBox != null)
             {
                 InputTextBox.Focus();
                 Keyboard.Focus(InputTextBox);
-                // Устанавливаем курсор в конец текста
+                // Set cursor to end of text
                 if (InputTextBox.Text != null)
                 {
                     InputTextBox.CaretIndex = InputTextBox.Text.Length;
@@ -255,36 +344,60 @@ namespace TagsControl
             }
         }
 
+        /// <summary>
+        /// Gets or sets the collection of available tags for selection
+        /// </summary>
+        /// <remarks>
+        /// This property represents the source data that populates the auto-complete suggestions.
+        /// It should be an IEnumerable of TagItem objects.
+        /// </remarks>
         public IEnumerable ItemsSource
         {
             get => (IEnumerable)GetValue(ItemsSourceProperty);
             set => SetValue(ItemsSourceProperty, value);
         }
 
+        /// <summary>
+        /// Gets or sets the collection of currently selected tags
+        /// </summary>
+        /// <remarks>
+        /// This property represents the collection of tags that are currently selected.
+        /// It supports two-way data binding and updates the UI when changed.
+        /// </remarks>
         public IList SelectedTags
         {
             get => (IList)GetValue(SelectedTagsProperty);
             set => SetValue(SelectedTagsProperty, value);
         }
 
+        /// <summary>
+        /// Handles changes to the ItemsSource property
+        /// </summary>
+        /// <param name="d">The dependency object</param>
+        /// <param name="e">Dependency property changed event arguments</param>
         private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = d as TagsControl;
             control?.UpdateSuggestions();
         }
 
+        /// <summary>
+        /// Handles changes to the SelectedTags property
+        /// </summary>
+        /// <param name="d">The dependency object</param>
+        /// <param name="e">Dependency property changed event arguments</param>
         private static void OnSelectedTagsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = d as TagsControl;
             if (control != null)
             {
-                // Отписываемся от старой коллекции
+                // Unsubscribe from the old collection
                 if (control._currentSelectedTagsCollection != null)
                 {
                     control._currentSelectedTagsCollection.CollectionChanged -= control.SelectedTags_CollectionChanged;
                 }
 
-                // Подписываемся на новую коллекцию, если она поддерживает уведомления
+                // Subscribe to the new collection if it supports notifications
                 control._currentSelectedTagsCollection = e.NewValue as INotifyCollectionChanged;
                 if (control._currentSelectedTagsCollection != null)
                 {
@@ -295,17 +408,54 @@ namespace TagsControl
             }
         }
 
+        /// <summary>
+        /// Handles changes to the TagsBackgroundBrushes property
+        /// </summary>
+        /// <param name="d">The dependency object</param>
+        /// <param name="e">Dependency property changed event arguments</param>
+        private static void OnTagsBackgroundBrushesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = d as TagsControl;
+            if (control != null)
+            {
+                if (control._currentBackgroundBrushesCollection != null)
+                {
+                    control._currentBackgroundBrushesCollection.CollectionChanged -= control.SelectedTags_CollectionChanged;
+                }
+
+                control._currentBackgroundBrushesCollection = e.NewValue as INotifyCollectionChanged;
+                if (control._currentBackgroundBrushesCollection != null)
+                {
+                    control._currentBackgroundBrushesCollection.CollectionChanged += control.SelectedTags_CollectionChanged;
+                }
+
+                control.UpdateTagsUI();
+            }
+        }
+
+        /// <summary>
+        /// Handles collection change events for selected tags
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">Collection changed event arguments</param>
         private void SelectedTags_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            // Обновляем UI при любых изменениях в коллекции (добавление, удаление, перемещение)
+            // Update UI when any changes occur in the collection (addition, removal, movement)
             UpdateTagsUI();
         }
 
+        /// <summary>
+        /// Updates the user interface to reflect current tag selections
+        /// </summary>
+        /// <remarks>
+        /// This method rebuilds the UI by clearing existing tags and recreating them based on the SelectedTags collection.
+        /// It also ensures that the input textbox is always positioned at the end of the tag container.
+        /// </remarks>
         private void UpdateTagsUI()
         {
-            // Проверяем, что InputTextBox создан
+            // Check that InputTextBox is created
             if (InputTextBox == null) return;
-            
+
             TagsContainer.Children.Clear();
 
             if (SelectedTags != null)
@@ -317,17 +467,17 @@ namespace TagsControl
                 }
             }
 
-            // Всегда добавляем TextBox в конец после всех тегов
+            // Always add TextBox at the end after all tags
             TagsContainer.Children.Add(InputTextBox);
-            
-            // Сбрасываем выделение тега при обновлении UI
+
+            // Reset tag selection when updating UI
             _selectedTagIndex = -1;
             ClearTagSelection();
-            
-            // Убеждаемся, что фокус остается в TextBox после обновления UI
+
+            // Ensure focus remains in TextBox after UI update
             if (InputTextBox.IsFocused || Keyboard.FocusedElement == InputTextBox)
             {
-                // Небольшая задержка для корректной установки фокуса
+                // Small delay for proper focus setting
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
                     InputTextBox.Focus();
@@ -336,10 +486,15 @@ namespace TagsControl
             }
         }
 
+        /// <summary>
+        /// Creates a visual representation of a tag chip
+        /// </summary>
+        /// <param name="tag">The tag item to create a chip for</param>
+        /// <returns>A Border control representing the tag chip</returns>
         private Border CreateTagChip(TagItem tag)
         {
 
-            // Получаем детерминированный цвет для этого displayName
+            // Get deterministic color for this display name
             Brush backgroundBrush = GetDeterministicBrush(tag.DisplayName);
             Color foregroundColor = GetContrastColor(backgroundBrush);
 
@@ -347,7 +502,7 @@ namespace TagsControl
             {
                 Style = (Style)FindResource("TagChipStyle"),
                 Background = backgroundBrush,
-                Cursor = Cursors.Arrow // Обычный курсор для тегов
+                Cursor = Cursors.Arrow // Normal cursor for tags
             };
 
             var stackPanel = new StackPanel { Orientation = Orientation.Horizontal };
@@ -376,23 +531,28 @@ namespace TagsControl
             stackPanel.Children.Add(deleteButton);
 
             border.Child = stackPanel;
-            
-            // Обработчики для курсора на теге
-            border.MouseEnter += (s, e) => 
-            { 
+
+            // Handlers for cursor on tag
+            border.MouseEnter += (s, e) =>
+            {
                 border.Cursor = Cursors.Arrow;
-                // Предотвращаем изменение курсора родительского элемента
+                // Prevent parent element cursor change
                 e.Handled = true;
             };
-            border.MouseLeave += (s, e) => 
-            { 
+            border.MouseLeave += (s, e) =>
+            {
                 border.Cursor = Cursors.Arrow;
                 e.Handled = true;
             };
-            
+
             return border;
         }
 
+        /// <summary>
+        /// Gets a deterministic brush color for a tag based on its display name
+        /// </summary>
+        /// <param name="displayName">The display name of the tag</param>
+        /// <returns>A Brush object representing the color for this tag</returns>
         private Brush GetDeterministicBrush(string displayName)
         {
             bool userTagsBackgroundInitialized = TagsBackgroundBrushes != null && TagsBackgroundBrushes.Count > 0;
@@ -401,12 +561,13 @@ namespace TagsControl
             if (string.IsNullOrEmpty(displayName))
                 return userTagsBackgroundInitialized ? TagsBackgroundBrushes[0] : _brushes[0];
 
-            // Check value in cache
-            if (_colorIndexCache.TryGetValue(displayName, out var cachedBrush))
-                return userTagsBackgroundInitialized ? TagsBackgroundBrushes[cachedBrush] : _brushes[cachedBrush];
-
             // Generate and limit index
             int index = Math.Abs(GetStableHash(displayName)) % (userTagsBackgroundInitialized ? TagsBackgroundBrushes.Count : _brushes.Length);
+
+            // Check value in cache
+            if (_colorIndexCache.TryGetValue(displayName, out var cachedBrush))
+                return userTagsBackgroundInitialized ? TagsBackgroundBrushes[index] : _brushes[index];
+
 
             // Save Color index in cache
             _colorIndexCache[displayName] = index;
@@ -414,6 +575,11 @@ namespace TagsControl
             return userTagsBackgroundInitialized ? TagsBackgroundBrushes[index] : _brushes[index];
         }
 
+        /// <summary>
+        /// Calculates the appropriate text color for contrast against a background brush
+        /// </summary>
+        /// <param name="backgroundBrush">The background brush to calculate contrast for</param>
+        /// <returns>A Color that provides good contrast with the background</returns>
         private Color GetContrastColor(Brush backgroundBrush)
         {
             Color color;
@@ -433,7 +599,11 @@ namespace TagsControl
             return brightness < 0.7 ? Colors.White : Colors.Black;
         }
 
-        // Стабильная хеш-функция для строки
+        /// <summary>
+        /// Generates a stable hash for a string input
+        /// </summary>
+        /// <param name="input">The input string to hash</param>
+        /// <returns>An integer hash value</returns>
         private int GetStableHash(string input)
         {
             if (string.IsNullOrEmpty(input))
@@ -444,11 +614,16 @@ namespace TagsControl
                 byte[] bytes = Encoding.UTF8.GetBytes(input.ToLower().Trim());
                 byte[] hashBytes = sha256.ComputeHash(bytes);
 
-                // Берем первые 4 байта для int
+                // Take first 4 bytes for int
                 return BitConverter.ToInt32(hashBytes, 0);
             }
         }
 
+        /// <summary>
+        /// Handles click events on delete buttons for tags
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">Routed event arguments</param>
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
@@ -461,9 +636,14 @@ namespace TagsControl
             }
         }
 
+        /// <summary>
+        /// Handles text change events in the input textbox
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">Text changed event arguments</param>
         private void InputTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            // Сбрасываем выделение тега при вводе текста
+            // Reset tag selection when typing text
             if (_selectedTagIndex >= 0)
             {
                 _selectedTagIndex = -1;
@@ -472,6 +652,9 @@ namespace TagsControl
             UpdateSuggestions();
         }
 
+        /// <summary>
+        /// Updates the suggestions list based on current input text
+        /// </summary>
         private void UpdateSuggestions()
         {
             if (ItemsSource == null || string.IsNullOrWhiteSpace(InputTextBox.Text))
@@ -485,7 +668,7 @@ namespace TagsControl
 
             string searchText = InputTextBox.Text.ToLower().Trim();
 
-            // Фильтруем источники данных
+            // Filter data sources
             foreach (TagItem item in ItemsSource)
             {
                 if (item.DisplayName.ToLower().Contains(searchText))
@@ -499,6 +682,10 @@ namespace TagsControl
             _selectedIndex = -1;
         }
 
+        /// <summary>
+        /// Adds a suggestion item to the suggestions panel
+        /// </summary>
+        /// <param name="item">The tag item to add as a suggestion</param>
         private void AddSuggestionItem(TagItem item)
         {
             var border = new Border
@@ -506,14 +693,14 @@ namespace TagsControl
                 Style = (Style)FindResource("SuggestionItemStyle")
             };
 
-            // Получаем детерминированный цвет для предложения
+            // Get deterministic color for suggestion
             Brush backgroundBrush = GetDeterministicBrush(item.DisplayName);
             Color foregroundColor = GetContrastColor(backgroundBrush);
 
-            // Создаем визуальное представление предложения
+            // Create visual representation of suggestion
             var grid = new Grid();
 
-            // Цветная полоса слева
+            // Color bar on the left
             var colorBar = new Border
             {
                 Width = 4,
@@ -523,7 +710,7 @@ namespace TagsControl
                 Margin = new Thickness(0, 2, 4, 2)
             };
 
-            // Основной текст
+            // Main text
             var textBlock = new TextBlock
             {
                 Text = item.DisplayName,
@@ -547,16 +734,28 @@ namespace TagsControl
             SuggestionsPanel.Children.Add(border);
         }
 
+        /// <summary>
+        /// Highlights a suggestion item when the mouse enters
+        /// </summary>
+        /// <param name="border">The border element to highlight</param>
         private void HighlightSuggestion(Border border)
         {
             border.Background = new SolidColorBrush(Color.FromArgb(25, 0, 120, 215));
         }
 
+        /// <summary>
+        /// Removes highlighting from a suggestion item when the mouse leaves
+        /// </summary>
+        /// <param name="border">The border element to unhighlight</param>
         private void UnhighlightSuggestion(Border border)
         {
             border.Background = Brushes.Transparent;
         }
 
+        /// <summary>
+        /// Selects a suggestion item and adds it as a tag
+        /// </summary>
+        /// <param name="item">The tag item to select</param>
         private void SelectSuggestion(TagItem item)
         {
             AddTag(item);
@@ -564,22 +763,32 @@ namespace TagsControl
             SuggestionsPopup.IsOpen = false;
         }
 
+        /// <summary>
+        /// Handles preview key down events for the control
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">Key event arguments</param>
         private void TagsControl_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            // Предотвращаем переход фокуса по Tab из контрола
+            // Prevent focus transition by Tab from control
             if (e.Key == Key.Tab && Keyboard.FocusedElement == InputTextBox)
             {
-                // Tab обрабатывается в InputTextBox_PreviewKeyDown
+                // Tab is handled in InputTextBox_PreviewKeyDown
                 return;
             }
         }
 
+        /// <summary>
+        /// Handles preview key down events for the input textbox
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">Key event arguments</param>
         private void InputTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
                 case Key.Tab:
-                    // Если есть выбранное предложение, добавляем его
+                    // If there is a selected suggestion, add it
                     if (_selectedIndex >= 0 && _selectedIndex < _suggestions.Count && SuggestionsPopup.IsOpen)
                     {
                         AddTag(_suggestions[_selectedIndex]);
@@ -589,7 +798,7 @@ namespace TagsControl
                     }
                     else
                     {
-                        // Предотвращаем переход фокуса на следующий элемент
+                        // Prevent focus transition to next element
                         e.Handled = true;
                     }
                     break;
@@ -616,6 +825,11 @@ namespace TagsControl
             }
         }
 
+        /// <summary>
+        /// Handles key down events for the input textbox
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">Key event arguments</param>
         private void InputTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
@@ -623,7 +837,7 @@ namespace TagsControl
                 case Key.Enter:
                     if (SuggestionsPopup.IsOpen && _selectedIndex >= 0 && _selectedIndex < _suggestions.Count)
                     {
-                        // Если есть выбранное предложение, добавляем его
+                        // If there is a selected suggestion, add it
                         AddTag(_suggestions[_selectedIndex]);
                         InputTextBox.Text = "";
                         SuggestionsPopup.IsOpen = false;
@@ -631,7 +845,7 @@ namespace TagsControl
                     }
                     else if (!string.IsNullOrWhiteSpace(InputTextBox.Text))
                     {
-                        // Создаем новый тег
+                        // Create new tag
                         TagItem newTag = CreateNewTag(InputTextBox.Text);
                         AddTag(newTag);
                         InputTextBox.Text = "";
@@ -645,7 +859,7 @@ namespace TagsControl
                     e.Handled = true;
                     break;
                 case Key.Back:
-                    // Если поле пустое и есть теги, удаляем последний тег
+                    // If field is empty and there are tags, remove the last tag
                     if (string.IsNullOrWhiteSpace(InputTextBox.Text) && SelectedTags.Count > 0)
                     {
                         var lastTag = SelectedTags[SelectedTags.Count - 1];
@@ -656,7 +870,7 @@ namespace TagsControl
                     }
                     else if (_selectedTagIndex >= 0 && _selectedTagIndex < SelectedTags.Count)
                     {
-                        // Если выделен тег, удаляем его
+                        // If tag is selected, remove it
                         SelectedTags.RemoveAt(_selectedTagIndex);
                         _selectedTagIndex = -1;
                         UpdateTagsUI();
@@ -665,7 +879,7 @@ namespace TagsControl
                     }
                     break;
                 case Key.Delete:
-                    // Если выделен тег, удаляем его
+                    // If tag is selected, remove it
                     if (_selectedTagIndex >= 0 && _selectedTagIndex < SelectedTags.Count)
                     {
                         SelectedTags.RemoveAt(_selectedTagIndex);
@@ -679,31 +893,35 @@ namespace TagsControl
             }
         }
 
+        /// <summary>
+        /// Handles left arrow key navigation
+        /// </summary>
+        /// <param name="e">Key event arguments</param>
         private void HandleLeftArrow(KeyEventArgs e)
         {
-            // Если курсор в начале текста и поле не пустое, разрешаем стандартное поведение
+            // If cursor is at the beginning of text and field is not empty, allow default behavior
             if (!string.IsNullOrWhiteSpace(InputTextBox.Text) && InputTextBox.SelectionStart > 0)
             {
                 e.Handled = false;
                 return;
             }
 
-            // Если поле пустое или курсор в начале, переходим к навигации по тегам
+            // If field is empty or cursor is at the beginning, navigate to tags
             if (string.IsNullOrWhiteSpace(InputTextBox.Text) && SelectedTags.Count > 0)
             {
                 if (_selectedTagIndex < 0)
                 {
-                    // Выделяем последний тег
+                    // Select last tag
                     _selectedTagIndex = SelectedTags.Count - 1;
                 }
                 else if (_selectedTagIndex > 0)
                 {
-                    // Переходим к предыдущему тегу
+                    // Move to previous tag
                     _selectedTagIndex--;
                 }
                 else
                 {
-                    // Уже на первом теге, разрешаем стандартное поведение
+                    // Already on first tag, allow default behavior
                     _selectedTagIndex = -1;
                     ClearTagSelection();
                     e.Handled = false;
@@ -718,9 +936,13 @@ namespace TagsControl
             }
         }
 
+        /// <summary>
+        /// Handles right arrow key navigation
+        /// </summary>
+        /// <param name="e">Key event arguments</param>
         private void HandleRightArrow(KeyEventArgs e)
         {
-            // Если есть выделенный тег, снимаем выделение и переходим в поле ввода
+            // If there is a selected tag, remove selection and go to input field
             if (_selectedTagIndex >= 0)
             {
                 _selectedTagIndex = -1;
@@ -730,11 +952,14 @@ namespace TagsControl
             }
             else
             {
-                // Стандартное поведение для стрелки вправо
+                // Default behavior for right arrow key
                 e.Handled = false;
             }
         }
 
+        /// <summary>
+        /// Highlights the currently selected tag
+        /// </summary>
         private void HighlightSelectedTag()
         {
             ClearTagSelection();
@@ -743,7 +968,7 @@ namespace TagsControl
                 var tagBorder = TagsContainer.Children[_selectedTagIndex] as Border;
                 if (tagBorder != null)
                 {
-                    // Добавляем визуальное выделение
+                    // Add visual selection
                     tagBorder.BorderBrush = new SolidColorBrush(Colors.Blue);
                     tagBorder.BorderThickness = new Thickness(2);
                     tagBorder.BringIntoView();
@@ -751,6 +976,9 @@ namespace TagsControl
             }
         }
 
+        /// <summary>
+        /// Clears selection from all tags
+        /// </summary>
         private void ClearTagSelection()
         {
             foreach (var child in TagsContainer.Children)
@@ -763,6 +991,10 @@ namespace TagsControl
             }
         }
 
+        /// <summary>
+        /// Moves the selection in the suggestions list
+        /// </summary>
+        /// <param name="direction">Direction to move (-1 for up, 1 for down)</param>
         private void MoveSelection(int direction)
         {
             if (_suggestions.Count == 0) return;
@@ -771,7 +1003,7 @@ namespace TagsControl
             if (_selectedIndex < 0) _selectedIndex = _suggestions.Count - 1;
             if (_selectedIndex >= _suggestions.Count) _selectedIndex = 0;
 
-            // Обновляем выделение
+            // Update selection
             for (int i = 0; i < SuggestionsPanel.Children.Count; i++)
             {
                 var border = SuggestionsPanel.Children[i] as Border;
@@ -780,7 +1012,6 @@ namespace TagsControl
                     if (i == _selectedIndex)
                     {
                         HighlightSuggestion(border);
-                        // Прокручиваем к выбранному элементу
                         border.BringIntoView();
                     }
                     else
@@ -791,6 +1022,10 @@ namespace TagsControl
             }
         }
 
+        /// <summary>
+        /// Adds a tag to the selected tags collection
+        /// </summary>
+        /// <param name="tag">The tag to add</param>
         private void AddTag(TagItem tag)
         {
             if (!SelectedTags.Contains(tag))
@@ -800,10 +1035,15 @@ namespace TagsControl
             }
         }
 
+        /// <summary>
+        /// Creates a new tag from text input
+        /// </summary>
+        /// <param name="text">The text to create a tag from</param>
+        /// <returns>A new TagItem object</returns>
         private TagItem CreateNewTag(string text)
         {
-            // Создаем новый тег с нужной структурой
-            // Это можно настроить под ваш тип данных
+            // Create new tag with proper structure
+            // This can be configured for your data type
             string cleanText = text.Trim();
             return new TagItem
             {
@@ -812,6 +1052,12 @@ namespace TagsControl
             };
         }
 
+        /// <summary>
+        /// Gets a property value from an object by name
+        /// </summary>
+        /// <param name="obj">The object to get the property from</param>
+        /// <param name="propertyName">The name of the property to retrieve</param>
+        /// <returns>The value of the property or the object itself if not found</returns>
         private object GetPropertyValue(object obj, string propertyName)
         {
             if (obj == null || string.IsNullOrEmpty(propertyName)) return obj;

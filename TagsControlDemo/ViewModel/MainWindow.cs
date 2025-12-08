@@ -9,11 +9,20 @@ using TagsControl.Models;
 
 namespace TagsControlDemo.ViewModel
 {
+    /// <summary>
+    /// View model for the main window that manages available and selected tags.
+    /// </summary>
     public class MainViewModel : INotifyPropertyChanged
     {
+        /// <summary>
+        /// Gets or sets the collection of available tags.
+        /// </summary>
         public ObservableCollection<TagItem> AvailableTags { get; set; }
         
         private ObservableCollection<TagItem> _selectedTags;
+        /// <summary>
+        /// Gets or sets the collection of selected tags.
+        /// </summary>
         public ObservableCollection<TagItem> SelectedTags
         {
             get => _selectedTags;
@@ -21,7 +30,7 @@ namespace TagsControlDemo.ViewModel
             {
                 if (_selectedTags != value)
                 {
-                    // Отписываемся от старой коллекции
+                    // Unsubscribe from the old collection
                     if (_selectedTags != null)
                     {
                         _selectedTags.CollectionChanged -= SelectedTagsCollectionChanged;
@@ -29,7 +38,7 @@ namespace TagsControlDemo.ViewModel
                     
                     _selectedTags = value;
                     
-                    // Подписываемся на новую коллекцию
+                    // Subscribe to the new collection
                     if (_selectedTags != null)
                     {
                         _selectedTags.CollectionChanged += SelectedTagsCollectionChanged;
@@ -40,27 +49,35 @@ namespace TagsControlDemo.ViewModel
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainViewModel"/> class.
+        /// </summary>
         public MainViewModel()
         {
-            // Инициализация доступных тегов
+            // Initialize available tags
             AvailableTags = new ObservableCollection<TagItem>
         {
-            new TagItem { DisplayName = "WPF", Value = "wpf" },
-            new TagItem { DisplayName = "MVVM", Value = "mvvm" },
-            new TagItem { DisplayName = "XAML", Value = "xaml" },
-            new TagItem { DisplayName = ".NET", Value = "dotnet" }
+            new TagItem("C#", "c_sharp"),
+            new TagItem("MVVM", "mvvm"),
+            new TagItem("XAML", "xaml"),
+            new TagItem("DotNet", "dotnet")
         };
 
-            SelectedTags = new ObservableCollection<TagItem>();
+            SelectedTags = new ObservableCollection<TagItem>(AvailableTags);
         }
 
+        /// <summary>
+        /// Handles changes to the selected tags collection.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The event arguments containing information about the change.</param>
         private void SelectedTagsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            // Обрабатываем только добавление элементов
+            // Handle only adding items
             if (e.Action != System.Collections.Specialized.NotifyCollectionChangedAction.Add)
                 return;
 
-            // Проверяем, что есть новые элементы
+            // Check that there are new items
             if (e.NewItems == null || e.NewItems.Count == 0)
                 return;
 
@@ -68,16 +85,23 @@ namespace TagsControlDemo.ViewModel
             if (newTag == null)
                 return;
 
-            // Если такой тег уже есть в списке доступных, ничего не делаем
+            // If such tag already exists in the available list, do nothing
             if (AvailableTags.Any(x => x.Value == newTag.Value))
                 return;
 
-            // Добавляем новый тег в список доступных
+            // Add new tag to the available list
             AvailableTags.Add(newTag);
         }
 
+        /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// Raises the PropertyChanged event for the specified property.
+        /// </summary>
+        /// <param name="propertyName">The name of the property that changed.</param>
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

@@ -60,7 +60,10 @@
                     ItemsSource="{Binding AvailableTags}"
                     SelectedTags="{Binding SelectedTags, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                     <tagscontrol:TagsControl.TagsBackgroundBrushes>
-                        <SolidColorBrush Color="#FFAC59"/>
+                        <LinearGradientBrush>
+                            <GradientStop Color="#f09" Offset="0"/>
+                            <GradientStop Color="#30f" Offset="1"/>
+                        </LinearGradientBrush>
                         <SolidColorBrush Color="#00D6FF"/>
                         <SolidColorBrush Color="#B200D0"/>
                     </tagscontrol:TagsControl.TagsBackgroundBrushes>
