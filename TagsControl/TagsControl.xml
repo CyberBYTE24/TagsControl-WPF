@@ -1,0 +1,417 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TagsControl</name>
+    </assembly>
+    <members>
+        <member name="T:TagsControl.Models.TagItem">
+            <summary>
+            Represents a single tag item with display name and value properties.
+            This model is used to store information about individual tags in the TagsControl.
+            </summary>
+            <remarks>
+            The TagItem class provides a simple data structure for tags that can be 
+            displayed in the UI and managed through the TagsControl. It supports both
+            display text (DisplayName) and an internal value (Value) for identification purposes.
+            </remarks>
+        </member>
+        <member name="P:TagsControl.Models.TagItem.DisplayName">
+            <summary>
+            Gets or sets the text to display in tag
+            </summary>
+            <remarks>
+            This property represents the user-facing text that will be displayed 
+            on the tag in the UI. It's used for visual identification of the tag.
+            </remarks>
+        </member>
+        <member name="P:TagsControl.Models.TagItem.Value">
+            <summary>
+            Gets or sets the string value
+            </summary>
+            <remarks>
+            This property represents an internal identifier for the tag. 
+            It can be used to uniquely identify tags in data processing and 
+            is particularly useful when working with databases or APIs.
+            </remarks>
+        </member>
+        <member name="M:TagsControl.Models.TagItem.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the TagItem class with specified display name and value.
+            </summary>
+            <param name="displayName">The text to display in the tag</param>
+            <param name="value">The internal string value for identification</param>
+            <remarks>
+            This constructor allows creating a new tag with both display name and value 
+            properties set at initialization time.
+            </remarks>
+        </member>
+        <member name="T:TagsControl.TagsControl">
+            <summary>
+            A user control for managing tags in the application.
+            Provides functionality to add, remove, and edit tags with visual feedback.
+            </summary>
+            <remarks>
+            This control allows users to manage collections of tags through a user-friendly interface.
+            It supports adding tags by typing and selecting from suggestions, removing individual tags,
+            and provides color-coded visualization for better organization.
+            </remarks>
+            <summary>
+            TagsControl
+            </summary>
+        </member>
+        <member name="F:TagsControl.TagsControl.ItemsSourceProperty">
+            <summary>
+            DependencyProperty for Source of Tags to selection
+            </summary>
+            <remarks>
+            This property represents the collection of available tags that can be selected.
+            It is used to populate the auto-complete suggestions as the user types.
+            </remarks>
+        </member>
+        <member name="F:TagsControl.TagsControl.SelectedTagsProperty">
+            <summary>
+            DependencyProperty of Source of selected Tags
+            </summary>
+            <remarks>
+            This property represents the collection of currently selected tags.
+            It supports two-way data binding and updates the UI when changed.
+            </remarks>
+        </member>
+        <member name="F:TagsControl.TagsControl.TagsBackgroundBrushesProperty">
+            <summary>
+            DependencyProperty for Background of inner Border
+            </summary>
+            <remarks>
+            This property controls the background brushes used for tag visualization.
+            It allows customization of tag colors through a collection of Brush objects.
+            </remarks>
+        </member>
+        <member name="F:TagsControl.TagsControl.BorderCornerRadiusProperty">
+            <summary>
+            DependencyProperty for CornerRadius of outer Border
+            </summary>
+            <remarks>
+            This property controls the corner radius of the outer border of the control.
+            It allows for rounded corners on the entire control container.
+            </remarks>
+        </member>
+        <member name="F:TagsControl.TagsControl.InnerBorderBrushProperty">
+            <summary>
+            DependencyProperty for BorderBrush inner Border
+            </summary>
+            <remarks>
+            This property controls the border brush of the inner elements in the control.
+            It defines the color of the border around the tag container and suggestions.
+            </remarks>
+        </member>
+        <member name="F:TagsControl.TagsControl.InnerBorderThicknessProperty">
+            <summary>
+            DependencyProperty for BorderThickness of inner Border
+            </summary>
+            <remarks>
+            This property controls the thickness of the border around inner elements.
+            It defines how thick the border appears around the tag container and suggestions.
+            </remarks>
+        </member>
+        <member name="F:TagsControl.TagsControl.InnerBackgroundProperty">
+            <summary>
+            DependencyProperty for Background of inner Border
+            </summary>
+            <remarks>
+            This property controls the background color of the inner elements in the control.
+            It defines the background color of the tag container and suggestions panel.
+            </remarks>
+        </member>
+        <member name="P:TagsControl.TagsControl.TagsBackgroundBrushes">
+            <summary>
+            Gets or sets the collection of background brushes for tags
+            </summary>
+            <remarks>
+            This property allows customization of tag colors. When set, it overrides the default color palette.
+            The control will cycle through these brushes when assigning colors to new tags.
+            </remarks>
+        </member>
+        <member name="P:TagsControl.TagsControl.BorderCornerRadius">
+            <summary>
+            Gets or sets the corner radius for the outer border
+            </summary>
+            <remarks>
+            This property controls the roundness of the control's outer border.
+            A value of 0 means sharp corners, while higher values create more rounded corners.
+            </remarks>
+        </member>
+        <member name="P:TagsControl.TagsControl.InnerBorderThickness">
+            <summary>
+            Gets or sets the thickness of the inner border
+            </summary>
+            <remarks>
+            This property controls how thick the border appears around the tag container and suggestions.
+            </remarks>
+        </member>
+        <member name="P:TagsControl.TagsControl.InnerBorderBrush">
+            <summary>
+            Gets or sets the brush for the inner border
+            </summary>
+            <remarks>
+            This property controls the color of the border around the tag container and suggestions.
+            </remarks>
+        </member>
+        <member name="P:TagsControl.TagsControl.InnerBackground">
+            <summary>
+            Gets or sets the background for inner elements
+            </summary>
+            <remarks>
+            This property controls the background color of the tag container and suggestions panel.
+            </remarks>
+        </member>
+        <member name="M:TagsControl.TagsControl.#ctor">
+            <summary>
+            Initializes a new instance of the TagsControl class
+            </summary>
+            <remarks>
+            This constructor initializes the control's UI elements and sets up event handlers.
+            It creates the input TextBox programmatically and configures its properties.
+            </remarks>
+        </member>
+        <member name="M:TagsControl.TagsControl.ClickArea_MouseDown(System.Object,System.Windows.Input.MouseButtonEventArgs)">
+            <summary>
+            Handles mouse down events on the click area to focus the input textbox
+            </summary>
+            <param name="sender">The event sender</param>
+            <param name="e">Mouse button event arguments</param>
+            <remarks>
+            This method ensures that clicking anywhere in the control focuses the input field,
+            except when clicking directly on a tag or delete button.
+            </remarks>
+        </member>
+        <member name="M:TagsControl.TagsControl.IsInsideTagOrDeleteButton(System.Windows.DependencyObject)">
+            <summary>
+            Determines if the mouse event occurred inside a tag or delete button
+            </summary>
+            <param name="source">The dependency object that triggered the event</param>
+            <returns>True if the event occurred inside a tag or delete button, false otherwise</returns>
+        </member>
+        <member name="M:TagsControl.TagsControl.FocusInputTextBox">
+            <summary>
+            Sets focus to the input text box and positions the cursor at the end of the text
+            </summary>
+        </member>
+        <member name="P:TagsControl.TagsControl.ItemsSource">
+            <summary>
+            Gets or sets the collection of available tags for selection
+            </summary>
+            <remarks>
+            This property represents the source data that populates the auto-complete suggestions.
+            It should be an IEnumerable of TagItem objects.
+            </remarks>
+        </member>
+        <member name="P:TagsControl.TagsControl.SelectedTags">
+            <summary>
+            Gets or sets the collection of currently selected tags
+            </summary>
+            <remarks>
+            This property represents the collection of tags that are currently selected.
+            It supports two-way data binding and updates the UI when changed.
+            </remarks>
+        </member>
+        <member name="M:TagsControl.TagsControl.OnItemsSourceChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Handles changes to the ItemsSource property
+            </summary>
+            <param name="d">The dependency object</param>
+            <param name="e">Dependency property changed event arguments</param>
+        </member>
+        <member name="M:TagsControl.TagsControl.OnSelectedTagsChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Handles changes to the SelectedTags property
+            </summary>
+            <param name="d">The dependency object</param>
+            <param name="e">Dependency property changed event arguments</param>
+        </member>
+        <member name="M:TagsControl.TagsControl.OnTagsBackgroundBrushesChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Handles changes to the TagsBackgroundBrushes property
+            </summary>
+            <param name="d">The dependency object</param>
+            <param name="e">Dependency property changed event arguments</param>
+        </member>
+        <member name="M:TagsControl.TagsControl.SelectedTags_CollectionChanged(System.Object,System.Collections.Specialized.NotifyCollectionChangedEventArgs)">
+            <summary>
+            Handles collection change events for selected tags
+            </summary>
+            <param name="sender">The event sender</param>
+            <param name="e">Collection changed event arguments</param>
+        </member>
+        <member name="M:TagsControl.TagsControl.UpdateTagsUI">
+            <summary>
+            Updates the user interface to reflect current tag selections
+            </summary>
+            <remarks>
+            This method rebuilds the UI by clearing existing tags and recreating them based on the SelectedTags collection.
+            It also ensures that the input textbox is always positioned at the end of the tag container.
+            </remarks>
+        </member>
+        <member name="M:TagsControl.TagsControl.CreateTagChip(TagsControl.Models.TagItem)">
+            <summary>
+            Creates a visual representation of a tag chip
+            </summary>
+            <param name="tag">The tag item to create a chip for</param>
+            <returns>A Border control representing the tag chip</returns>
+        </member>
+        <member name="M:TagsControl.TagsControl.GetDeterministicBrush(System.String)">
+            <summary>
+            Gets a deterministic brush color for a tag based on its display name
+            </summary>
+            <param name="displayName">The display name of the tag</param>
+            <returns>A Brush object representing the color for this tag</returns>
+        </member>
+        <member name="M:TagsControl.TagsControl.GetContrastColor(System.Windows.Media.Brush)">
+            <summary>
+            Calculates the appropriate text color for contrast against a background brush
+            </summary>
+            <param name="backgroundBrush">The background brush to calculate contrast for</param>
+            <returns>A Color that provides good contrast with the background</returns>
+        </member>
+        <member name="M:TagsControl.TagsControl.GetStableHash(System.String)">
+            <summary>
+            Generates a stable hash for a string input
+            </summary>
+            <param name="input">The input string to hash</param>
+            <returns>An integer hash value</returns>
+        </member>
+        <member name="M:TagsControl.TagsControl.DeleteButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Handles click events on delete buttons for tags
+            </summary>
+            <param name="sender">The event sender</param>
+            <param name="e">Routed event arguments</param>
+        </member>
+        <member name="M:TagsControl.TagsControl.InputTextBox_TextChanged(System.Object,System.Windows.Controls.TextChangedEventArgs)">
+            <summary>
+            Handles text change events in the input textbox
+            </summary>
+            <param name="sender">The event sender</param>
+            <param name="e">Text changed event arguments</param>
+        </member>
+        <member name="M:TagsControl.TagsControl.UpdateSuggestions">
+            <summary>
+            Updates the suggestions list based on current input text
+            </summary>
+        </member>
+        <member name="M:TagsControl.TagsControl.AddSuggestionItem(TagsControl.Models.TagItem)">
+            <summary>
+            Adds a suggestion item to the suggestions panel
+            </summary>
+            <param name="item">The tag item to add as a suggestion</param>
+        </member>
+        <member name="M:TagsControl.TagsControl.HighlightSuggestion(System.Windows.Controls.Border)">
+            <summary>
+            Highlights a suggestion item when the mouse enters
+            </summary>
+            <param name="border">The border element to highlight</param>
+        </member>
+        <member name="M:TagsControl.TagsControl.UnhighlightSuggestion(System.Windows.Controls.Border)">
+            <summary>
+            Removes highlighting from a suggestion item when the mouse leaves
+            </summary>
+            <param name="border">The border element to unhighlight</param>
+        </member>
+        <member name="M:TagsControl.TagsControl.SelectSuggestion(TagsControl.Models.TagItem)">
+            <summary>
+            Selects a suggestion item and adds it as a tag
+            </summary>
+            <param name="item">The tag item to select</param>
+        </member>
+        <member name="M:TagsControl.TagsControl.TagsControl_PreviewKeyDown(System.Object,System.Windows.Input.KeyEventArgs)">
+            <summary>
+            Handles preview key down events for the control
+            </summary>
+            <param name="sender">The event sender</param>
+            <param name="e">Key event arguments</param>
+        </member>
+        <member name="M:TagsControl.TagsControl.InputTextBox_PreviewKeyDown(System.Object,System.Windows.Input.KeyEventArgs)">
+            <summary>
+            Handles preview key down events for the input textbox
+            </summary>
+            <param name="sender">The event sender</param>
+            <param name="e">Key event arguments</param>
+        </member>
+        <member name="M:TagsControl.TagsControl.InputTextBox_KeyDown(System.Object,System.Windows.Input.KeyEventArgs)">
+            <summary>
+            Handles key down events for the input textbox
+            </summary>
+            <param name="sender">The event sender</param>
+            <param name="e">Key event arguments</param>
+        </member>
+        <member name="M:TagsControl.TagsControl.HandleLeftArrow(System.Windows.Input.KeyEventArgs)">
+            <summary>
+            Handles left arrow key navigation
+            </summary>
+            <param name="e">Key event arguments</param>
+        </member>
+        <member name="M:TagsControl.TagsControl.HandleRightArrow(System.Windows.Input.KeyEventArgs)">
+            <summary>
+            Handles right arrow key navigation
+            </summary>
+            <param name="e">Key event arguments</param>
+        </member>
+        <member name="M:TagsControl.TagsControl.HighlightSelectedTag">
+            <summary>
+            Highlights the currently selected tag
+            </summary>
+        </member>
+        <member name="M:TagsControl.TagsControl.ClearTagSelection">
+            <summary>
+            Clears selection from all tags
+            </summary>
+        </member>
+        <member name="M:TagsControl.TagsControl.MoveSelection(System.Int32)">
+            <summary>
+            Moves the selection in the suggestions list
+            </summary>
+            <param name="direction">Direction to move (-1 for up, 1 for down)</param>
+        </member>
+        <member name="M:TagsControl.TagsControl.AddTag(TagsControl.Models.TagItem)">
+            <summary>
+            Adds a tag to the selected tags collection
+            </summary>
+            <param name="tag">The tag to add</param>
+        </member>
+        <member name="M:TagsControl.TagsControl.CreateNewTag(System.String)">
+            <summary>
+            Creates a new tag from text input
+            </summary>
+            <param name="text">The text to create a tag from</param>
+            <returns>A new TagItem object</returns>
+        </member>
+        <member name="M:TagsControl.TagsControl.GetPropertyValue(System.Object,System.String)">
+            <summary>
+            Gets a property value from an object by name
+            </summary>
+            <param name="obj">The object to get the property from</param>
+            <param name="propertyName">The name of the property to retrieve</param>
+            <returns>The value of the property or the object itself if not found</returns>
+        </member>
+        <member name="M:TagsControl.TagsControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TagsControl.Properties.Resources">
+            <summary>
+              Класс ресурсов со строгим типом для поиска локализованных строк и пр.
+            </summary>
+        </member>
+        <member name="P:TagsControl.Properties.Resources.ResourceManager">
+            <summary>
+              Возврат кэшированного экземпляра ResourceManager, используемого этим классом.
+            </summary>
+        </member>
+        <member name="P:TagsControl.Properties.Resources.Culture">
+            <summary>
+              Переопределяет свойство CurrentUICulture текущего потока для всех
+              подстановки ресурсов с помощью этого класса ресурсов со строгим типом.
+            </summary>
+        </member>
+    </members>
+</doc>
