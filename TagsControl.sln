@@ -7,11 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsControl", "TagsControl\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsControlDemo", "TagsControlDemo\TagsControlDemo.csproj", "{CBA9D89D-CA6E-4E9B-AF5B-BE0605F8A247}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}"
-	ProjectSection(SolutionItems) = preProject
-		D:\Users\Vershinsky\Pictures\Screenshots\screenshot.png = D:\Users\Vershinsky\Pictures\Screenshots\screenshot.png
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
