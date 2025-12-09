@@ -1,4 +1,4 @@
- | ReadMe | ![Documentation](Documentation.md) |
+ | ReadMe | [Documentation](Documentation.md) |
 
 # TagsControl
 
