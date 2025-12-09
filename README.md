@@ -1,75 +1,75 @@
 # TagsControl
 
-A WPF User Control for managing collections of tags with visual feedback and auto-complete functionality.
+Это элемент управления WPF для управления коллекциями тегов с визуальными подсказками и функцией автозавершения.
 
-## Overview
+## Обзор
 
-The TagsControl is a reusable WPF user control that allows users to manage collections of tags through an intuitive interface. It supports adding tags by typing and selecting from suggestions, removing individual tags, and provides color-coded visualization for better organization.
+TagsControl - это повторно используемый элемент управления WPF, который позволяет пользователям управлять коллекциями тегов через интуитивный интерфейс. Он поддерживает добавление тегов путем ввода и выбора из предложений, удаление отдельных тегов и предоставляет цветовую визуализацию для лучшей организации.
 
-## Features
+## Особенности
 
-- **Tag Management**: Add, remove, and edit tags with visual feedback
-- **Auto-complete Suggestions**: Type to see available tags in real-time
-- **Color-coded Tags**: Each tag is assigned a unique color based on its display name
-- **Customizable Appearance**: Configure colors, borders, and other visual properties
-- **Two-way Data Binding**: Seamless integration with MVVM patterns
-- **Responsive Design**: Adapts to different container sizes
+- **Управление тегами**: Добавление, удаление и редактирование тегов с визуальными подсказками
+- **Подсказки автозавершения**: Вводите текст, чтобы увидеть доступные теги в реальном времени
+- **Цветовые теги**: Каждый тег получает уникальный цвет на основе его отображаемого имени
+- **Настраиваемый внешний вид**: Настройка цветов, границ и других визуальных свойств
+- **Двусторонняя привязка данных**: Безопасная интеграция с паттернами MVVM
+- **Адаптивный дизайн**: Адаптируется к различным размерам контейнеров
 
-## Getting Started
+## Начало работы
 
-### Prerequisites
+### Предварительные требования
 
-- .NET Framework 4.7.2 or later
-- Visual Studio 2019 or later (recommended)
+- .NET Framework 4.7.2 или выше
+- Visual Studio 2019 или выше (рекомендуется)
 
-### Installation
+### Установка
 
-1. Add the TagsControl project to your solution
-2. Reference the TagsControl project in your WPF application
-3. Include the control in your XAML:
+1. Добавьте проект TagsControl в ваше решение
+2. Ссылайтесь на проект TagsControl в вашем WPF приложении
+3. Включите элемент управления в ваш XAML:
 
 ```xml
 <Window x:Class="YourApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:tags="clr-namespace:TagsControl;assembly=TagsControl">
-    
+
     <Grid>
-        <tags:TagsControl ItemsSource="{Binding AvailableTags}" 
+        <tags:TagsControl ItemsSource="{Binding AvailableTags}"
                           SelectedTags="{Binding SelectedTags}" />
     </Grid>
 </Window>
 ```
 
-## Usage
+## Использование
 
-### Properties
+### Свойства
 
-| Property | Type | Description |
+| Свойство | Тип | Описание |
 |----------|------|-------------|
-| `ItemsSource` | `IEnumerable<TagItem>` | Collection of available tags for selection |
-| `SelectedTags` | `IList<TagItem>` | Collection of currently selected tags |
-| `TagsBackgroundBrushes` | `ObservableCollection<Brush>` | Custom color palette for tags |
-| `BorderCornerRadius` | `CornerRadius` | Corner radius for the outer border |
-| `InnerBorderBrush` | `Brush` | Brush for inner border |
-| `InnerBorderThickness` | `Thickness` | Thickness of inner border |
-| `InnerBackground` | `Brush` | Background brush for inner elements |
+| `ItemsSource` | `IEnumerable<TagItem>` | Коллекция доступных тегов для выбора |
+| `SelectedTags` | `IList<TagItem>` | Коллекция текущих выбранных тегов |
+| `TagsBackgroundBrushes` | `ObservableCollection<Brush>` | Пользовательская палитра цветов для тегов |
+| `BorderCornerRadius` | `CornerRadius` | Радиус скругления внешней границы |
+| `InnerBorderBrush` | `Brush` | Кисть для внутренней границы |
+| `InnerBorderThickness` | `Thickness` | Толщина внутренней границы |
+| `InnerBackground` | `Brush` | Кисть фона для внутренних элементов |
 
-### Data Model
+### Модель данных
 
-The control uses the `TagItem` model which has two properties:
+Элемент управления использует модель `TagItem`, которая имеет два свойства:
 
 ```csharp
 public class TagItem
 {
-    public string DisplayName { get; set; }  // Text to display in tag
-    public string Value { get; set; }        // Internal identifier
+    public string DisplayName { get; set; }  // Текст для отображения в теге
+    public string Value { get; set; }        // Внутренний идентификатор
 }
 ```
 
-## Example Usage
+## Пример использования
 
-In your ViewModel:
+В вашем ViewModel:
 
 ```csharp
 public class MainViewModel : INotifyPropertyChanged
@@ -92,21 +92,21 @@ public class MainViewModel : INotifyPropertyChanged
 }
 ```
 
-In your XAML:
+В вашем XAML:
 
 ```xml
-<tags:TagsControl ItemsSource="{Binding AvailableTags}" 
+<tags:TagsControl ItemsSource="{Binding AvailableTags}"
                   SelectedTags="{Binding SelectedTags}" />
 ```
 
-## Customization
+## Настройка
 
-### Custom Colors
+### Пользовательские цвета
 
-To customize tag colors, set the `TagsBackgroundBrushes` property:
+Для настройки цветов тегов установите свойство `TagsBackgroundBrushes`:
 
 ```xml
-<tags:TagsControl ItemsSource="{Binding AvailableTags}" 
+<tags:TagsControl ItemsSource="{Binding AvailableTags}"
                   SelectedTags="{Binding SelectedTags}">
     <tags:TagsControl.TagsBackgroundBrushes>
         <SolidColorBrush Color="Red"/>
@@ -116,33 +116,14 @@ To customize tag colors, set the `TagsBackgroundBrushes` property:
 </tags:TagsControl>
 ```
 
-### Styling
+## Вклад в проект
 
-You can override the default styles by defining new styles in your application resources:
+1. Сделайте форк репозитория
+2. Создайте ветку функции
+3. Зафиксируйте изменения
+4. Отправьте в ветку
+5. Создайте Pull Request
 
-```xml
-<Style TargetType="Border" x:Key="TagChipStyle">
-    <!-- Custom style for tag chips -->
-</Style>
+## Лицензия
 
-<Style TargetType="Button" x:Key="DeleteButtonStyle">
-    <!-- Custom style for delete buttons -->
-</Style>
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Inspired by tag management UI patterns in modern web applications
-- Uses deterministic color assignment for consistent tag visualization
+Этот проект лицензирован по MIT License - см. файл `LICENSE.md` для подробностей.
