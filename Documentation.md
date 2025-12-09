@@ -1,4 +1,4 @@
- | ![ReadMe](README.md) | Documentation |
+ | [ReadMe](README.md) | Documentation |
 
 <a name='assembly'></a>
 # TagsControl
