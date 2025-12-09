@@ -596,7 +596,7 @@ namespace TagsControl
             }
             double brightness = (0.299 * color.R + 0.587 * color.G + 0.114 * color.B) / 255;
 
-            return brightness < 0.7 ? Colors.White : Colors.Black;
+            return brightness < 0.6 ? Colors.White : Colors.Black;
         }
 
         /// <summary>

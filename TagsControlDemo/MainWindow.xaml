@@ -64,7 +64,7 @@
                             <GradientStop Color="#f09" Offset="0"/>
                             <GradientStop Color="#30f" Offset="1"/>
                         </LinearGradientBrush>
-                        <SolidColorBrush Color="#00D6FF"/>
+                        <SolidColorBrush Color="#CC77FF"/>
                         <SolidColorBrush Color="#B200D0"/>
                     </tagscontrol:TagsControl.TagsBackgroundBrushes>
                 </tagscontrol:TagsControl>
