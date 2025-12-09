@@ -1045,11 +1045,7 @@ namespace TagsControl
             // Create new tag with proper structure
             // This can be configured for your data type
             string cleanText = text.Trim();
-            return new TagItem
-            {
-                DisplayName = cleanText,
-                Value = cleanText.ToLower().Replace(" ", "_").Replace("#", "_sharp")
-            };
+            return new TagItem(cleanText, cleanText.ToLower().Replace(" ", "_").Replace("#", "_sharp"));
         }
 
         /// <summary>

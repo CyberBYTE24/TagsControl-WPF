@@ -59,7 +59,7 @@ namespace TagsControlDemo.ViewModel
         {
             new TagItem("C#", "c_sharp"),
             new TagItem("MVVM", "mvvm"),
-            new TagItem("XAML", "xaml"),
+            new TagItem("F#", "f_sharp"),
             new TagItem("DotNet", "dotnet")
         };
 
@@ -81,7 +81,7 @@ namespace TagsControlDemo.ViewModel
             if (e.NewItems == null || e.NewItems.Count == 0)
                 return;
 
-            var newTag = e.NewItems[0] as TagItem;
+            TagItem newTag = e.NewItems[0] as TagItem;
             if (newTag == null)
                 return;
 
