@@ -1,6 +1,6 @@
 # TagsControl
 
-![](http://192.168.188.66/libraries/tags-wpf/badges/main/pipeline.svg) ![](http://192.168.188.44:81/app/rest/builds/buildType:id:TagsWpf_Build/statusIcon.svg)
+[![pipeline status](http://192.168.188.66/libraries/tags-wpf/badges/master/pipeline.svg)](http://192.168.188.66/libraries/tags-wpf/-/commits/master) ![](http://192.168.188.44:81/app/rest/builds/buildType:id:TagsWpf_Build/statusIcon.svg) [![Latest Release](http://192.168.188.66/libraries/tags-wpf/-/badges/release.svg)](http://192.168.188.66/libraries/tags-wpf/-/releases)
 
 Это элемент управления WPF для управления коллекциями тегов с визуальными подсказками и функцией автозавершения.
 
